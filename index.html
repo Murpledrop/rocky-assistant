@@ -94,10 +94,18 @@
         }
       };
 
+      // Re-shows the button if the recognition stops unexpectedly
+      recognition.onend = () => {
+        document.getElementById('start-btn').style.display = 'inline-block';
+        document.getElementById('status').innerText = "Microphone turned off. Click to restart!";
+      };
+
       function startListening() {
         try {
           recognition.start();
           document.getElementById('status').innerText = "Listening... Say 'Hey Rocky'!";
+          // Hides the button immediately upon click
+          document.getElementById('start-btn').style.display = 'none';
         } catch (e) {
           console.log("Microphone is already active.");
         }
