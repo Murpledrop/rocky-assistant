@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rocky Assistant</title>
+  <style>
+    body {
+      /* Green gradient background */
+      background: linear-gradient(135deg, #1b5e20, #4caf50, #81c784);
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Arial', sans-serif;
+      color: white;
+    }
+
+    .assistant-container {
+      text-align: center;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      max-width: 350px;
+      width: 90%;
+    }
+
+    .pup-badge {
+      font-size: 80px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    #status {
+      font-size: 1.1rem;
+      margin: 20px 0;
+      font-weight: bold;
+      line-height: 1.4;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 1rem;
+      border-radius: 25px;
+      border: none;
+      background-color: #ff9800;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: transform 0.1s ease, background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #f57c00;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="assistant-container">
+    <div class="pup-badge">♻️</div>
+    <h1>Rocky Assistant</h1>
+    <p id="status">Click the button below to turn on the microphone!</p>
+    <button id="start-btn" onclick="startListening()">Turn On Microphone</button>
+  </div>
+
+  <script>
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      document.getElementById('status').innerText = "Speech recognition is not supported in this browser. Try opening this in Google Chrome!";
+    } else {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = false;
+
+      recognition.onresult = (event) => {
+        const lastResultIndex = event.results.length - 1;
+        const transcript = event.results[lastResultIndex][0].transcript.trim().toLowerCase();
+
+        console.log("Heard:", transcript);
+
+        // Listens for 'hey rocky' or 'rocky'
+        if (transcript.includes("hey rocky") || transcript.includes("rocky")) {
+          triggerWakeWord();
+        }
+      };
+
+      function startListening() {
+        try {
+          recognition.start();
+          document.getElementById('status').innerText = "Listening... Say 'Hey Rocky'!";
+        } catch (e) {
+          console.log("Microphone is already active.");
+        }
+      }
+
+      function triggerWakeWord() {
+        document.getElementById('status').innerText = "Green means go! Don't lose it, reuse it!";
+        speakResponse("Green means go! Don't lose it, reuse it!");
+      }
+
+      function speakResponse(text) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.pitch = 1.35; // Energetic puppy voice pitch
+        utterance.rate = 1.1;   // Slightly faster speed
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+  </script>
+</body>
+</html>
